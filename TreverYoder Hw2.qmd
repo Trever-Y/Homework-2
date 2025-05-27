@@ -1,5 +1,7 @@
 ---
 title: "HW2: Programming in Base R"
+author: Trever Yoder
+date: 5/27/2025
 format:
   pdf:
       code-overflow: wrap
@@ -226,6 +228,41 @@ list_bp
 ### Question 1
 
 ```{r}
+#Define the function with no default data and "mean" as the default stat
+summarize_bp <- function(list_bp, stat = "mean") {
+  bp_fun <- get(stat) 
+  
+  #simplify the 2 elements of list_bp
+  treat <- list_bp$treatment
+  placebo <- list_bp$placebo
+  
+  #compute the statistics for the columns of interest
+  stat_values <- c(
+    bp_fun(treat$pre_bp),
+    bp_fun(treat$post_bp),
+    bp_fun(treat$diff_bp),
+    bp_fun(placebo$pre_bp),
+    bp_fun(placebo$post_bp),
+    bp_fun(placebo$diff_bp)
+  )
+  
+  #create dynamic names
+  stat_names <- paste0(
+    stat, "_",
+    c("trtment_pre", "trtment_post", "trtment_diff",
+      "placebo_pre", "placebo_post", "placebo_diff")
+  )
+  
+  #assign names and return
+  names(stat_values) <- stat_names
+  return(stat_values)
+}
 
+#Apply function
+summarize_bp(list_bp)
+summarize_bp(list_bp, stat = "var")
+summarize_bp(list_bp, stat = "sd")
+summarize_bp(list_bp, stat = "min")
+summarize_bp(list_bp, stat = "max")
 ```
 
