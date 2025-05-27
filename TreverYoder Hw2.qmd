@@ -4,7 +4,7 @@ author: Trever Yoder
 date: 5/27/2025
 format:
   pdf:
-      code-overflow: wrap
+    code-overflow: wrap
 editor: visual
 ---
 
@@ -14,9 +14,13 @@ editor: visual
 
 ```{r}
 #create pre and post measurement vectors
-pre <- c(130, 128, 116, 124, 133, 134, 118, 126, 114, 127, 141, 138, 128, 140, 137, 131, 120, 128, 139, 135)
+pre <- c(130, 128, 116, 124, 133, 134, 118, 126, 114, 
+         127, 141, 138, 128, 140, 137, 131, 120, 128, 139, 135
+)
 
-post <- c(114, 98, 113, 99, 107, 116, 113, 111, 119, 117, 101, 119, 130, 122, 106, 106, 124, 102, 117, 113)
+post <- c(114, 98, 113, 99, 107, 116, 113, 111, 119, 117, 101, 
+          119, 130, 122, 106, 106, 124, 102, 117, 113
+)
 ```
 
 ### Question 2
@@ -65,7 +69,7 @@ decreased
 ### Question 7
 
 ```{r}
-#Average decrease in blood pressure for those who had a decrease in blood pressure post-treatment
+#Average decrease in bp for those who had a decrease in bp post treatment
 mean(decreased)
 ```
 
@@ -134,8 +138,9 @@ BP_dataframe_placebo <- data.frame(
   row.names = NULL)
 
 #Add the column corresponding to TRUE if post_bp is less than 120
-BP_dataframe_placebo$post_under_120 <- ifelse(BP_dataframe_placebo$post_bp < 120, "TRUE", "FALSE")
-
+BP_dataframe_placebo$post_under_120 <- ifelse(BP_dataframe_placebo$post_bp < 120,
+                                              "TRUE", "FALSE"
+)
 #Nicely print the dataframe
 knitr :: kable(BP_dataframe_placebo)
 ```
@@ -187,7 +192,7 @@ list_bp$placebo$status <- character(10)
 
 ```{r}
 for (i in 1:nrow(list_bp$treatment)) {
-  bp <- list_bp$treatment$post_bp[i] #create a simple phrase to access each element of post_bp in treatment
+  bp <- list_bp$treatment$post_bp[i] #simplify accessing each element of the list
   
   if (bp <= 120) {
     list_bp$treatment$status[i] <- "optimal"
@@ -206,7 +211,7 @@ for (i in 1:nrow(list_bp$treatment)) {
 ```{r}
 #same as question 2 but for the placebo element in the list
 for (i in 1:nrow(list_bp$placebo)) {
-  bp2 <- list_bp$placebo$post_bp[i] #create a simple phrase to access each element of post_bp in placebo
+  bp2 <- list_bp$placebo$post_bp[i] #simplify accessing each element of the list
   
   if (bp2 <= 120) {
     list_bp$placebo$status[i] <- "optimal"
@@ -230,7 +235,7 @@ list_bp
 ```{r}
 #Define the function with no default data and "mean" as the default stat
 summarize_bp <- function(list_bp, stat = "mean") {
-  bp_fun <- get(stat) 
+  my_fun <- get(stat) 
   
   #simplify the 2 elements of list_bp
   treat <- list_bp$treatment
@@ -238,12 +243,12 @@ summarize_bp <- function(list_bp, stat = "mean") {
   
   #compute the statistics for the columns of interest
   stat_values <- c(
-    bp_fun(treat$pre_bp),
-    bp_fun(treat$post_bp),
-    bp_fun(treat$diff_bp),
-    bp_fun(placebo$pre_bp),
-    bp_fun(placebo$post_bp),
-    bp_fun(placebo$diff_bp)
+    my_fun(treat$pre_bp),
+    my_fun(treat$post_bp),
+    my_fun(treat$diff_bp),
+    my_fun(placebo$pre_bp),
+    my_fun(placebo$post_bp),
+    my_fun(placebo$diff_bp)
   )
   
   #create dynamic names
