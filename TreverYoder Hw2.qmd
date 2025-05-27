@@ -1,29 +1,229 @@
 ---
-title: "Programming in Base R"
-format: pdf
+title: "HW2: Programming in Base R"
+format:
+  pdf:
+      code-overflow: wrap
 editor: visual
 ---
 
-## Quarto
+# Task 1: Basic Vector Practice
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+### Question 1
 
 ```{r}
-1 + 1
+#create pre and post measurement vectors
+pre <- c(130, 128, 116, 124, 133, 134, 118, 126, 114, 127, 141, 138, 128, 140, 137, 131, 120, 128, 139, 135)
+
+post <- c(114, 98, 113, 99, 107, 116, 113, 111, 119, 117, 101, 119, 130, 122, 106, 106, 124, 102, 117, 113)
 ```
 
-You can add options to executable code like this
+### Question 2
 
 ```{r}
-#| echo: false
-2 * 2
+#Create subject names
+subject <- paste("Subject", 1:20, sep = "_")
+
+#Assign names to both vectors
+names(pre) <- subject
+names(post) <- subject
+
+```
+### Question 3
+```{r}
+#Calculate change in blood pressure
+diff_op <- post - pre
+
+#Print the change in blood pressure
+diff_op
+```
+### Question 4
+
+```{r}
+#Average decrease in blood pressure
+meandiff <- mean(diff_op)
+
+#Print the mean difference
+meandiff
+```
+### Question 5
+
+```{r}
+#determine which subjects had a decrease in blood pressure
+which(diff_op < 0, useNames = TRUE)
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+### Question 6
+
+```{r}
+#create and print the subset vector of differences
+decreased <- diff_op[-c(9, 13, 17)]
+decreased
+```
+
+### Question 7
+
+```{r}
+#Average decrease in blood pressure for those who had a decrease in blood pressure post-treatment
+mean(decreased)
+```
+
+
+# Task 2: Basic Data Frame Practice
+
+### Question 1
+
+```{r}
+#Create dataframe with 4 columns corresponding to the vectors create in Task 1
+BP_dataframe <- data.frame(
+  patient = subject, 
+  pre_bp = pre, 
+  post_bp = post, 
+  diff_bp = diff_op,
+  row.names = NULL)
+```
+
+### Question 2
+
+```{r}
+#Return only the rows where the diff_bp is negative
+subset(BP_dataframe, diff_bp < 0)
+```
+
+### Question 3
+
+```{r}
+#Create new column corresponding to TRUE if post_bp is less than 120
+BP_dataframe$post_under_120 <- ifelse(BP_dataframe$post_bp < 120, "TRUE", "FALSE")
+```
+
+### Question 4
+
+```{r}
+
+#Print Nice table
+knitr :: kable(BP_dataframe)
+```
+
+# Task 3: List Practice
+
+### Question 1
+
+```{r}
+#Create placebo vectors
+pre_placebo <- c(138, 135, 147, 117, 152, 134, 114, 121, 131, 130)
+post_placebo <- c(105, 136, 123, 130, 134, 143, 135, 139, 120, 124)
+
+#calculate the difference
+diff_bp_placebo <- post_placebo - pre_placebo
+
+#create subject names
+subject_placebo <- paste("Subject", 1:10, sep = "_")
+
+#assign subject names
+names(pre_placebo) <- subject_placebo
+names(post_placebo) <- subject_placebo
+
+#Create dataframe with 4 columns corresponding to the vectors
+BP_dataframe_placebo <- data.frame(
+  patient = subject_placebo, 
+  pre_bp = pre_placebo, 
+  post_bp = post_placebo, 
+  diff_bp = diff_bp_placebo,
+  row.names = NULL)
+
+#Add the column corresponding to TRUE if post_bp is less than 120
+BP_dataframe_placebo$post_under_120 <- ifelse(BP_dataframe_placebo$post_bp < 120, "TRUE", "FALSE")
+
+#Nicely print the dataframe
+knitr :: kable(BP_dataframe_placebo)
+```
+
+### Question 2
+
+```{r}
+#Create a list with 2 elements
+list_bp <- list(treatment = BP_dataframe, placebo = BP_dataframe_placebo)
+
+#print the list
+list_bp
+```
+
+### Question 3
+
+```{r}
+#1st way to access the first element
+list_bp[[1]]
+
+#2nd way to access the first element
+list_bp$treatment
+
+#3rd way to access the first element
+list_bp[["treatment"]]
+```
+
+### Question 4
+
+```{r}
+#Access the placebo data frame and print the pre_bp column on one line
+list_bp[[2]]$pre_bp
+
+#Alternatively, print the whole column (if desired)
+list_bp[[2]]["pre_bp"]
+```
+
+# Task 4: Control Flow Practice
+
+### Question 1
+
+```{r}
+#Add "status" column to both-- treatment and placebo-- elements of list_bp
+list_bp$treatment$status <- character(20)
+list_bp$placebo$status <- character(10)
+```
+
+### Question 2
+
+```{r}
+for (i in 1:nrow(list_bp$treatment)) {
+  bp <- list_bp$treatment$post_bp[i] #create a simple phrase to access each element of post_bp in treatment
+  
+  if (bp <= 120) {
+    list_bp$treatment$status[i] <- "optimal"
+  } else if (bp <= 130) {
+    list_bp$treatment$status[i] <- "borderline"
+  } else if (bp > 130) {
+    list_bp$treatment$status[i] <- "high"
+  } else {
+    list_bp$treatment$status[i] <- "Erorr"
+  }
+}
+```
+
+### Question 3
+
+```{r}
+#same as question 2 but for the placebo element in the list
+for (i in 1:nrow(list_bp$placebo)) {
+  bp2 <- list_bp$placebo$post_bp[i] #create a simple phrase to access each element of post_bp in placebo
+  
+  if (bp2 <= 120) {
+    list_bp$placebo$status[i] <- "optimal"
+  } else if (bp2 <= 130) {
+    list_bp$placebo$status[i] <- "borderline"
+  } else if (bp2 > 130) {
+    list_bp$placebo$status[i] <- "high"
+  } else {
+    list_bp$placebo$status[i] <- "Erorr"
+  }
+}
+
+#Print my updated list
+list_bp
+```
+
+# Task 5
+
+### Question 1
 
 ```{r}
 
